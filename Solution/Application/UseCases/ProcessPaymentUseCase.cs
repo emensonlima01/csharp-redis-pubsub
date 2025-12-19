@@ -1,5 +1,5 @@
+using Application.Events;
 using Domain.Entities;
-using Domain.Events;
 using Domain.Repositories;
 
 namespace Application.UseCases;

@@ -1,4 +1,4 @@
-using Domain.Services;
+using Application.Messaging;
 using StackExchange.Redis;
 using System.Text.Json;
 
@@ -25,19 +25,19 @@ public class RedisMessageBusService : IMessageBusService
         await subscriber.PublishAsync(RedisChannel.Literal(channel), serializedMessage);
     }
 
-    public async Task SubscribeAsync<T>(string channel, IEventHandler eventHandler) where T : class
+    public async Task SubscribeAsync<T>(string channel, IEventHandler<T> eventHandler) where T : class
     {
         var subscriber = _connectionMultiplexer.GetSubscriber();
-        
+
         await subscriber.SubscribeAsync(RedisChannel.Literal(channel), async (_, message) =>
         {
-            if (message.HasValue)
+            if (!message.HasValue)
+                return;
+
+            var deserializedMessage = JsonSerializer.Deserialize<T>(message.ToString(), _jsonOptions);
+            if (deserializedMessage != null)
             {
-                var deserializedMessage = JsonSerializer.Deserialize<T>(message.ToString(), _jsonOptions);
-                if (deserializedMessage != null)
-                {
-                    await eventHandler.Handle(deserializedMessage);
-                }
+                await eventHandler.Handle(deserializedMessage);
             }
         });
     }

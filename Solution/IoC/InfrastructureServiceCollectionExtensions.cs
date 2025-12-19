@@ -1,5 +1,5 @@
+using Application.Messaging;
 using Domain.Repositories;
-using Domain.Services;
 using Infrastructure.Configuration;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
@@ -25,7 +25,7 @@ public static class InfrastructureServiceCollectionExtensions
     private static IServiceCollection AddRedisConfiguration(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<RedisSettings>(configuration.GetSection(RedisSettings.SectionName));
-        
+
         return services;
     }
 

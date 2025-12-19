@@ -1,6 +1,6 @@
 using Domain.Entities;
 using Domain.Repositories;
-using Domain.Services;
+using Infrastructure.Services;
 
 namespace Infrastructure.Repositories;
 

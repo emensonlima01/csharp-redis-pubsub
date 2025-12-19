@@ -1,14 +1,11 @@
 using Application.DTOs;
-using Domain.Entities;
-using Domain.Events;
-using Domain.Services;
+using Application.Events;
+using Application.Messaging;
 
 namespace Application.UseCases;
 
 public class ReceivePaymentUseCase(IMessageBusService messageBusService)
 {
-    private const string PaymentReceivedChannel = "payment:received";
-
     public async Task Handle(ReceivePaymentRequest request)
     {
         var paymentEvent = new PaymentReceivedEvent
@@ -19,6 +16,6 @@ public class ReceivePaymentUseCase(IMessageBusService messageBusService)
             CreatedAt = DateTime.UtcNow
         };
 
-        await messageBusService.PublishAsync(PaymentReceivedChannel, paymentEvent);
+        await messageBusService.PublishAsync(PaymentChannels.PaymentReceived, paymentEvent);
     }
 }

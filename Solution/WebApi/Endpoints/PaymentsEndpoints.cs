@@ -1,6 +1,6 @@
-using Microsoft.AspNetCore.Mvc;
 using Application.DTOs;
 using Application.UseCases;
+using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Endpoints;
 
@@ -45,6 +45,11 @@ public static class PaymentsEndpoints
         [FromRoute] Guid id,
         [FromServices] CancelPaymentUseCase useCase)
     {
-        return Results.Accepted();
+        var payment = await useCase.Handle(id);
+
+        if (payment == null)
+            return Results.NotFound(new { message = "Payment not found" });
+
+        return Results.Ok(payment);
     }
 }

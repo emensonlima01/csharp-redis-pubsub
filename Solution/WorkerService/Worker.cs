@@ -1,25 +1,22 @@
-using Domain.Events;
-using Domain.Services;
+using Application.Events;
+using Application.Messaging;
 
-namespace WorkerService
+namespace WorkerService;
+
+public class Worker(
+    IMessageBusService messageBusService,
+    IEventHandler<PaymentReceivedEvent> eventHandler) : BackgroundService
 {
-    public class Worker(
-        IMessageBusService messageBusService,
-        IEventHandler eventHandler) : BackgroundService
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        private const string PaymentReceivedChannel = "payment:received";
+        await messageBusService.SubscribeAsync(
+            PaymentChannels.PaymentReceived,
+            eventHandler
+        );
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        while (!stoppingToken.IsCancellationRequested)
         {
-            await messageBusService.SubscribeAsync<PaymentReceivedEvent>(
-                PaymentReceivedChannel,
-                eventHandler
-            );
-
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                await Task.Delay(1000, stoppingToken);
-            }
+            await Task.Delay(1000, stoppingToken);
         }
     }
 }

@@ -1,14 +1,13 @@
+using Application.Events;
+using Application.Messaging;
 using Application.UseCases;
-using Domain.Events;
-using Domain.Services;
 
 namespace Application.Handlers;
 
-public class PaymentReceivedHandler(ProcessPaymentUseCase useCase) : IEventHandler
+public class PaymentReceivedHandler(ProcessPaymentUseCase useCase) : IEventHandler<PaymentReceivedEvent>
 {
-    async Task IEventHandler.Handle(object message)
+    public async Task Handle(PaymentReceivedEvent message)
     {
-        var paymentEvent = (PaymentReceivedEvent)message;
-        await useCase.Handle(paymentEvent);
+        await useCase.Handle(message);
     }
 }
